@@ -1,0 +1,21 @@
+{
+  "name": "dungeonMMO",
+  "description": "Dungeon running MMO",
+  "main": "private/main.js",
+  "authors": [
+    "Phil Brookes <phil.brookes@gmail.com>"
+  ],
+  "license": "ISC",
+  "homepage": "https://github.com/philbrookes/dungeonMMO",
+  "moduleType": [],
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "jquery": "~2.2.0"
+  }
+}
