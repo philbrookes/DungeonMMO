@@ -18,16 +18,55 @@ module.exports = function(grunt) {
       }
     },
     concat_in_order: {
-      'angular-app': {
+      'client-code': {
         files: {
-          'public_html/js/app.js': ['client-code/main.js', 'client-code/*/*.js']
+          'public_html/js/client.js': ['client-code/*.js']
+        }
+      },
+      'engine': {
+        files: {
+          'public_html/js/engine.js': ['client-code/Engine/main.js', 'client-code/Engine/**/*.js']
+        }
+      },
+      'game': {
+        files: {
+          'public_html/js/game.js': ['client-code/Game/main.js', 'client-code/Game/**/*.js']
+        }
+      }
+    },
+    uglify: {
+      'client-code': {
+        options: {
+          sourceMap: true,
+          sourceMapName: 'public_html/js/client.min.js.map'
+        },
+        files: {
+          'public_html/js/client.min.js': ['public_html/js/client.js']
+        }
+      },
+      'engine-code': {
+        options: {
+          sourceMap: true,
+          sourceMapName: 'public_html/js/engine.min.js.map'
+        },
+        files: {
+          'public_html/js/engine.min.js': ['public_html/js/engine.js']
+        }
+      },
+      'game-code': {
+        options: {
+          sourceMap: true,
+          sourceMapName: 'public_html/js/game.min.js.map'
+        },
+        files: {
+          'public_html/js/game.min.js': ['public_html/js/game.js']
         }
       }
     },
     watch: {
-      'scripts': {
+      'client-code': {
         files: ['client-code/**/*.js'],
-        tasks: ['concat_in_order']
+        tasks: ['concat_in_order', 'uglify']
       }
     }
   });
@@ -36,4 +75,5 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-contrib-watch');
   grunt.loadNpmTasks('grunt-serve');
   grunt.loadNpmTasks('grunt-contrib-jshint');
+  grunt.loadNpmTasks('grunt-contrib-uglify');
 };
