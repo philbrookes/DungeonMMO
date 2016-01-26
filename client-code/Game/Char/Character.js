@@ -59,6 +59,8 @@ Game.Char.Character = {
                     X: character.Pos.X + velX,
                     Y: character.Pos.Y + velY
                 });
+                var cam = Engine.Render.Scene.GetCamera(Engine.Render.Renderer.GetScene(Engine.renderer));
+                Engine.Utilities.Position.SetPos(cam.Pos, character.Pos);
             }
         }
 

@@ -10,7 +10,7 @@ Engine.Physical.Item = {
     GetColor: function GetColor(item){
         return item.Color;
     },
-    Render: function Render(item, context, timeSinceLastRender){
+    Render: function Render(item, timeSinceLastRender, context){
         context.fillStyle = Engine.Physical.Item.GetColor(item);
         context.fillRect(-10, -10, 20, 20);
     }

@@ -1,6 +1,7 @@
 var Game = {
     Char: {},
     Equipment: {},
+    Map: {},
     ShowingThrobber: 0,
     rendering: false,
     Player: {},
@@ -120,7 +121,7 @@ var Game = {
         }*/
         Game.Character = Game.Char.Character.createNewCharacter();
         Game.Char.Character.SetAction(Game.Character, "stand");
-        Game.Char.Character.Teleport(Game.Character, {X: 150, Y: 150, Z: 0});
+        Game.Char.Character.Teleport(Game.Character, {X: 0, Y: 0, Z: 0});
         var scene = Engine.Render.Scene.CreateScene();
         var camera = Engine.Render.Camera.CreateCamera();
         Engine.Render.Scene.SetCamera(scene, camera);

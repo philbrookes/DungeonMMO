@@ -16,7 +16,7 @@ Engine.Render.Renderer = {
         Engine.Render.Renderer.clear(scene, context);
         var timeSinceLastRender = Engine.Render.Renderer.GetTimeSinceLastRender(renderer);
         context.save();
-        context.translate(camera.Pos.X, camera.Pos.Y);
+        context.translate(-camera.Pos.X + (context.canvas.width/2), -camera.Pos.Y + (context.canvas.height/2));
 
         var items = Engine.Render.Scene.GetRenderItems(scene);
         for(var index in items) {
@@ -32,7 +32,7 @@ Engine.Render.Renderer = {
         if ( item instanceof Character ){
             Game.Char.Character.Render(item, timeSinceLastRender, context);
         } else if ( item instanceof Item ){
-            Engine.Render.Item.Render(item, timeSinceLastRender, context);
+            Engine.Physical.Item.Render(item, timeSinceLastRender, context);
         }
         context.restore();
     },

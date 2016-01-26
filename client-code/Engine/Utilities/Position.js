@@ -15,8 +15,8 @@ Engine.Utilities.Position = {
             return Math.sqrt(tx*tx+ty*ty+tz*tz);
     },
     SetPos: function SetPos(position, newPos){
-        position.X = newPos.X || position.X;
-        position.Y = newPos.Y || position.Y;
-        position.Z = newPos.Z || position.Z;
+        position.X = typeof newPos.X !== 'undefined' ? newPos.X : position.X;
+        position.Y = typeof newPos.Y !== 'undefined' ? newPos.Y : position.Y;
+        position.Z = typeof newPos.Z !== 'undefined' ? newPos.Z : position.Z;
     }
 }
