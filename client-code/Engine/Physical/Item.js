@@ -1,4 +1,4 @@
-Item = function(){
+Item = function Item(){
     this.Pos = new Position(0, 0);
     this.Color = "#bcbcbc"
 }
