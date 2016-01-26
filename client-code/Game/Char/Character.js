@@ -6,7 +6,7 @@ Character = function Character(){
     this.action = "none";
     this.Pos = Engine.Utilities.Position.CreatePosition();
     this.Destination = Engine.Utilities.Position.CreatePosition();
-    this.MovementSpeed = 25;
+    this.MovementSpeed = 35;
 };
 
 Game.Char.Character = {
@@ -22,6 +22,7 @@ Game.Char.Character = {
         Game.Char.GearSet.AddToGearSet(char.gear, Game.Equipment.Equippable.CreateEquipment("noob_shoes"));
         Game.Char.GearSet.AddToGearSet(char.gear, Game.Equipment.Equippable.CreateEquipment("noob_pants"));
         Game.Char.GearSet.AddToGearSet(char.gear, Game.Equipment.Equippable.CreateEquipment("noob_vest"));
+        Game.Char.Character.SetMovementSpeed(char, 140);
         return char;
     },
 
@@ -69,13 +70,29 @@ Game.Char.Character = {
         }
     },
 
+    SetMovementSpeed: function SetDirection(character, speed){
+        character.MovementSpeed = speed;
+        if(character.hasOwnProperty("gear")) {
+            for(var index in character.gear.order){
+                var gear = character.gear[character.gear.order[index]];
+                if(gear !== ""){
+                    Engine.Render.Animation.SetSpeed(gear.animations["walk"], speed / 35);
+                }
+            }
+        }
+    },
+
     SetAction: function SetAction(character, action){
+        character.action = action;
         if(character.hasOwnProperty("gear")) {
             Game.Char.GearSet.SetAction(character.gear, action);
         }
     },
 
     Move: function Move(character, direction){
+        if(character.action != "stand"){
+            return;
+        }
         switch (direction){
             case Game.DIRECTIONS.NORTH:
                 Engine.Utilities.Position.SetPos(character.Destination, {Y: character.Pos.Y - Game.MAP.TILES.SIZE.Y});

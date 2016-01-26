@@ -58,5 +58,8 @@ Engine.Render.Animation = {
     },
     SetRow: function SetRow(animation, row){
         animation.row = row;
+    },
+    SetSpeed: function SetSpeed(animation, speed){
+        animation.speed = speed;
     }
 };

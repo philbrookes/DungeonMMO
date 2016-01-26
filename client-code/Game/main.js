@@ -34,21 +34,21 @@ var Game = {
     },
 
     KeyDown: function KeyDown(event){
-        switch (event.key){
-            case "w":
-            case "ArrowUp":
+        switch (event.keyCode){
+            case 87:
+            case 38:
                 Game.Char.Character.Move(Game.Character, Game.DIRECTIONS.NORTH);
                 break;
-            case "s":
-            case "ArrowDown":
+            case 83:
+            case 40:
                 Game.Char.Character.Move(Game.Character, Game.DIRECTIONS.SOUTH);
                 break;
-            case "a":
-            case "ArrowLeft":
+            case 65:
+            case 37:
                 Game.Char.Character.Move(Game.Character, Game.DIRECTIONS.WEST);
                 break;
-            case "d":
-            case "ArrowRight":
+            case 68:
+            case 39:
                 Game.Char.Character.Move(Game.Character, Game.DIRECTIONS.EAST);
                 break;
         }
@@ -119,7 +119,7 @@ var Game = {
             });
         }*/
         Game.Character = Game.Char.Character.createNewCharacter();
-        Game.Char.Character.SetAction(Game.Character, "walkcycle");
+        Game.Char.Character.SetAction(Game.Character, "stand");
         Game.Char.Character.Teleport(Game.Character, {X: 150, Y: 150, Z: 0});
         var scene = Engine.Render.Scene.CreateScene();
         var camera = Engine.Render.Camera.CreateCamera();
