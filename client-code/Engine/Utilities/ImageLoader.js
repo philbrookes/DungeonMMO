@@ -3,7 +3,6 @@ var PreloadedImage = function(src){
     this.imageReady = false;
     var me = this;
     this.image.addEventListener("load", function(){
-        console.log(src, "ready");
         me.imageReady = true;
     });
     this.image.src = src;

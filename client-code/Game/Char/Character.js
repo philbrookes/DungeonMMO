@@ -8,6 +8,7 @@ Character = function Character(){
     this.Destination = Engine.Utilities.Position.CreatePosition();
     this.MovementSpeed = 35;
     this.RenderFunction = Game.Char.Character.Render;
+    this.shadow = Engine.Utilities.ImageLoader.Load("/images/characters/shadows/shadow.png");
 };
 
 Game.Char.Character = {
@@ -28,6 +29,9 @@ Game.Char.Character = {
     },
 
     Render: function Render(character, timeSinceLastRender, context){
+        if(character.shadow.imageReady){
+            context.drawImage(character.shadow.image, 0, 0, 64, 64, -32, -28, 64, 64);
+        }
         Game.Char.GearSet.Render(character.gear, timeSinceLastRender, context);
         var distance = Engine.Utilities.Position.Distance(character.Pos, character.Destination);
         if(distance > 0){
