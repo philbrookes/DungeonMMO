@@ -1,7 +1,9 @@
 var Game = {
     Char: {},
     Equipment: {},
-    Map: {},
+    Map: {
+        Data: {}
+    },
     ShowingThrobber: 0,
     rendering: false,
     Player: {},
@@ -18,7 +20,26 @@ var Game = {
                 X: 64,
                 Y: 64
             }
+        },
+        GRID: {
+            SIZE: {
+                X: 30,
+                Y: 30
+            }
         }
+    },
+    LAYERS: {
+        DEEP_BACKGROUND: 0,
+        BACKGROUND: 1,
+        ITEM_SHADOWS: 2,
+        ITEMS: 3,
+        EFFECTS: 4,
+        MONSTER_SHADOWS: 5,
+        MONSTERS: 6,
+        PLAYER_SHADOWS: 7,
+        PLAYERS: 8,
+        WALLS: 9,
+        CEILING: 10
     },
 
     Init: function Init(engine){
@@ -119,16 +140,38 @@ var Game = {
                 $("#character-create-form").on('submit', Game.characterCreateSubmit);
             });
         }*/
-        Game.Character = Game.Char.Character.createNewCharacter();
-        Game.Char.Character.SetAction(Game.Character, "stand");
-        Game.Char.Character.Teleport(Game.Character, {X: 0, Y: 0, Z: 0});
         var scene = Engine.Render.Scene.CreateScene();
         var camera = Engine.Render.Camera.CreateCamera();
         Engine.Render.Scene.SetCamera(scene, camera);
-        Engine.Render.Scene.AddRenderItem(scene, Game.Character);
+
+        Game.Character = Game.Char.Character.createNewCharacter();
+        Game.Char.Character.SetAction(Game.Character, "stand");
+        var x = Engine.Utilities.RNG.GenerateInclusiveInt(-65665, 65665);
+        var y = Engine.Utilities.RNG.GenerateInclusiveInt(-65665, 65665);
+        x = x - (x % 64);
+        y = y - (y % 64);
+        Game.Char.Character.Teleport(Game.Character, {X: 0, Y: 0, Z: 0});
+        Engine.Render.Scene.AddRenderItem(scene, Game.Character, Game.LAYERS.PLAYERS);
+
         Engine.Render.Renderer.SetScene(Engine.renderer, scene);
+
+        Game.updateMap(scene, Game.Character.Pos);
+
         Game.rendering = true;
         Game.DoRender();
+    },
+
+    updateMap: function updateMap(scene, position){
+        Game.Map.Data = Game.Map.Generator.GenerateMapRegion(position);
+
+        Engine.Render.Scene.ClearLayer(scene, Game.LAYERS.BACKGROUND);
+
+        for(var x in Game.Map.Data){
+            for(var y in Game.Map.Data[x]){
+                var item = Game.Map.Data[x][y];
+                Engine.Render.Scene.AddRenderItem(scene, item, Game.LAYERS.BACKGROUND);
+            }
+        }
     },
 
     characterCreateSubmit: function characterCreateSubmit(event){

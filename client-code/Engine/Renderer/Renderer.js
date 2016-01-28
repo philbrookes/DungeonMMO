@@ -18,9 +18,11 @@ Engine.Render.Renderer = {
         context.save();
         context.translate(-camera.Pos.X + (context.canvas.width/2), -camera.Pos.Y + (context.canvas.height/2));
 
-        var items = Engine.Render.Scene.GetRenderItems(scene);
-        for(var index in items) {
-            Engine.Render.Renderer.RenderItem(items[index], timeSinceLastRender, context);
+        var layers = Engine.Render.Scene.GetLayers(scene);
+        for(var index in layers) {
+            for(var itemIndex in layers[index].RenderItems) {
+                Engine.Render.Renderer.RenderItem(layers[index].RenderItems[itemIndex], timeSinceLastRender, context);
+            }
         }
 
         context.restore();
@@ -29,10 +31,8 @@ Engine.Render.Renderer = {
     RenderItem: function RenderItem(item, timeSinceLastRender, context){
         context.save();
         context.translate(item.Pos.X, item.Pos.Y);
-        if ( item instanceof Character ){
-            Game.Char.Character.Render(item, timeSinceLastRender, context);
-        } else if ( item instanceof Item ){
-            Engine.Physical.Item.Render(item, timeSinceLastRender, context);
+        if(typeof item.RenderFunction !== 'undefined'){
+            item.RenderFunction(item, timeSinceLastRender, context);
         }
         context.restore();
     },

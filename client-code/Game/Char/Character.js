@@ -7,6 +7,7 @@ Character = function Character(){
     this.Pos = Engine.Utilities.Position.CreatePosition();
     this.Destination = Engine.Utilities.Position.CreatePosition();
     this.MovementSpeed = 35;
+    this.RenderFunction = Game.Char.Character.Render;
 };
 
 Game.Char.Character = {
@@ -95,20 +96,34 @@ Game.Char.Character = {
         if(character.action != "stand"){
             return;
         }
+
+        Game.Char.Character.SetDirection(character, direction);
+
+        var currentTileX = character.Pos.X / Game.MAP.TILES.SIZE.X;
+        var currentTileY = character.Pos.Y / Game.MAP.TILES.SIZE.Y;
         switch (direction){
             case Game.DIRECTIONS.NORTH:
-                Engine.Utilities.Position.SetPos(character.Destination, {Y: character.Pos.Y - Game.MAP.TILES.SIZE.Y});
+                if(typeof Game.Map.Data[currentTileX][currentTileY - 1] !== 'undefined') {
+                    Engine.Utilities.Position.SetPos(character.Destination, {Y: character.Pos.Y - Game.MAP.TILES.SIZE.Y});
+                }
                 break;
             case Game.DIRECTIONS.SOUTH:
-                Engine.Utilities.Position.SetPos(character.Destination, {Y: character.Pos.Y + Game.MAP.TILES.SIZE.Y});
+                if(typeof Game.Map.Data[currentTileX][currentTileY + 1] !== 'undefined') {
+                    Engine.Utilities.Position.SetPos(character.Destination, {Y: character.Pos.Y + Game.MAP.TILES.SIZE.Y});
+                }
                 break;
             case Game.DIRECTIONS.WEST:
-                Engine.Utilities.Position.SetPos(character.Destination, {X: character.Pos.X - Game.MAP.TILES.SIZE.X});
+                if(typeof Game.Map.Data[currentTileX - 1][currentTileY] !== 'undefined') {
+                    Engine.Utilities.Position.SetPos(character.Destination, {X: character.Pos.X - Game.MAP.TILES.SIZE.X});
+                }
                 break;
             case Game.DIRECTIONS.EAST:
-                Engine.Utilities.Position.SetPos(character.Destination, {X: character.Pos.X + Game.MAP.TILES.SIZE.X});
+                if(typeof Game.Map.Data[currentTileX + 1][currentTileY] !== 'undefined') {
+                    Engine.Utilities.Position.SetPos(character.Destination, {X: character.Pos.X + Game.MAP.TILES.SIZE.X});
+                }
                 break;
         }
+        Game.updateMap(Engine.Render.Renderer.GetScene(Engine.renderer), character.Destination);
     },
 
     Teleport: function Teleport(character, position){
