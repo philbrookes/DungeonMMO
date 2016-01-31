@@ -158,7 +158,7 @@ Game.Map.Generator = {
                 if(typeof tiles[x] === 'undefined'){
                     tiles[x] = {};
                 }
-                for(var y = centerTileY-buffer_size;y<centerTileY+buffer_size;y++){
+                for(var y = centerTileY - buffer_size;y<centerTileY + buffer_size;y++){
                     if(gridTiles[x] && gridTiles[x][y]){
                         tiles[x][y] = Game.Map.Generator.createTile({
                             X: x * Game.MAP.TILES.SIZE.X,
@@ -185,17 +185,6 @@ Game.Map.Generator = {
         }
         var rng = new Math.seedrandom(seed);
 
-        var bornStr = "" + grid.X1 + grid.X2;
-        var bornList = [];
-        for (var i = 0, len = bornStr.length; i < len; i += 1) {
-            bornList.push(+bornStr.charAt(i));
-        }
-
-        var surviveStr = "" + grid.Y1 + grid.Y2;
-        var surviveList = [];
-        for (var i = 0, len = surviveStr.length; i < len; i += 1) {
-            surviveList.push(+surviveStr.charAt(i));
-        }
 
         var bornList = [6,7,8];
         var surviveList = [3,4,5,6,7,8];

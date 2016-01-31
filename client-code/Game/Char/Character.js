@@ -142,5 +142,7 @@ Game.Char.Character = {
     Teleport: function Teleport(character, position){
         Engine.Utilities.Position.SetPos(character.Pos, position);
         Engine.Utilities.Position.SetPos(character.Destination, position);
+        var cam = Engine.Render.Scene.GetCamera(Engine.Render.Renderer.GetScene(Engine.renderer));
+        Engine.Utilities.Position.SetPos(cam.Pos, character.Pos);
     }
 };
