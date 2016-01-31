@@ -22,7 +22,7 @@ Game.Equipment.Equippable = {
                 eq.stats = {};
                 break;
             case "noob_pants":
-                eq.image  = "pants_greenish";
+                eq.image  = "plate_armor_pants";
                 eq.slot   = "legs";
                 eq.weight = 1;
                 eq.name   = "Noob Pants";
@@ -31,7 +31,7 @@ Game.Equipment.Equippable = {
                 }
                 break;
             case "noob_shoes":
-                eq.image  = "shoes_brown";
+                eq.image  = "plate_armor_shoes";
                 eq.slot   = "feet";
                 eq.weight = 1;
                 eq.name   = "Noob Shoes";
@@ -40,13 +40,20 @@ Game.Equipment.Equippable = {
                 }
                 break;
             case "noob_vest":
-                eq.image  = "leather_armor_shirt_white";
+                eq.image  = "plate_armor_torso";
                 eq.slot   = "torso";
                 eq.weight = "1";
                 eq.name   = "Noob Vest";
                 eq.stats = {
                     armor: 2
                 }
+                break;
+            case "noob_knife":
+                eq.image  = "knife";
+                eq.slot   = "weapon";
+                eq.weight = "1";
+                eq.name   = "Noob Knife";
+                eq.stats = {};
                 break;
         }
         eq.animations['walk'] = Engine.Render.Animation.CreateAnimation({
@@ -58,19 +65,20 @@ Game.Equipment.Equippable = {
             endFrame: 0
         });
         eq.animations['thrust'] = Engine.Render.Animation.CreateAnimation({
-            imageUrl: Game.Equipment.Equippable.GetImageName(eq, "thrust"),
+            imageUrl: Game.Equipment.Equippable.GetImageName(eq, "thrust")
         });
         eq.animations['bow'] = Engine.Render.Animation.CreateAnimation({
-            imageUrl: Game.Equipment.Equippable.GetImageName(eq, "bow"),
+            imageUrl: Game.Equipment.Equippable.GetImageName(eq, "bow")
         });
         eq.animations['hurt'] = Engine.Render.Animation.CreateAnimation({
-            imageUrl: Game.Equipment.Equippable.GetImageName(eq, "hurt"),
+            imageUrl: Game.Equipment.Equippable.GetImageName(eq, "hurt")
         });
         eq.animations['slash'] = Engine.Render.Animation.CreateAnimation({
-            imageUrl: Game.Equipment.Equippable.GetImageName(eq, "slash"),
+            imageUrl: Game.Equipment.Equippable.GetImageName(eq, "slash")
         });
         eq.animations['spellcast'] = Engine.Render.Animation.CreateAnimation({
             imageUrl: Game.Equipment.Equippable.GetImageName(eq, "spellcast"),
+            loop: false
         });
         eq.animation = "stand";
         return eq;

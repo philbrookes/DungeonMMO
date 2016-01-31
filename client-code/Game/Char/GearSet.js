@@ -36,6 +36,13 @@ Game.Char.GearSet = {
         for (index in gearset.order) {
             var item = gearset.order[index];
             if (gearset[item] !== "") {
+
+                Engine.Render.Animation.SetSpeed(gearset[item].animations["walk"], Game.Character.MovementSpeed / 75);
+
+                Game.Equipment.Equippable.SetAnimation(gearset[item], Game.Character.action);
+
+                Engine.Render.Animation.SetRow(gearset[item].animations[gearset[item].animation], Game.Character.direction);
+
                 Engine.Render.Animation.Render(gearset[item].animations[gearset[item].animation], timeSinceLastRender, context);
             }
         }
@@ -52,27 +59,5 @@ Game.Char.GearSet = {
         }
         this.AnimReady = true;
         return true;
-    },
-    SetDirection: function SetDirection(gearset, direction){
-        if(gearset.hasOwnProperty("order")) {
-            for (index in gearset.order) {
-                var item = gearset.order[index];
-                if (gearset[item] !== "") {
-                    for(var animIndex in gearset[item].animations) {
-                        Engine.Render.Animation.SetRow(gearset[item].animations[animIndex], direction);
-                    }
-                }
-            }
-        }
-    },
-    SetAction: function SetAction(gearset, action){
-        if(gearset.hasOwnProperty("order")) {
-            for (index in gearset.order) {
-                var item = gearset.order[index];
-                if (gearset[item] !== "") {
-                    Game.Equipment.Equippable.SetAnimation(gearset[item], action);
-                }
-            }
-        }
     }
 }

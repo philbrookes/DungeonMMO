@@ -3,12 +3,15 @@ Character = function Character(){
     this.Gear = {};
     this.Health = 0;
     this.MaxHealth = 100;
-    this.action = "none";
+    this.action = "stand";
     this.Pos = Engine.Utilities.Position.CreatePosition();
     this.Destination = Engine.Utilities.Position.CreatePosition();
     this.MovementSpeed = 35;
     this.RenderFunction = Game.Char.Character.Render;
     this.shadow = Engine.Utilities.ImageLoader.Load("/images/characters/shadows/shadow.png");
+    this.attackSpeed = 1;
+    this.attackEnabled = true;
+    this.direction = Game.DIRECTIONS.SOUTH;
 };
 
 Game.Char.Character = {
@@ -45,7 +48,9 @@ Game.Char.Character = {
                 var velX = (tx/distance) * (character.MovementSpeed * timeSinceLastRender);
                 var velY = (ty/distance) * (character.MovementSpeed * timeSinceLastRender);
 
-                Game.Char.Character.SetAction(character, "walk");
+                if(character.action !== "walk") {
+                    Game.Char.Character.SetAction(character, "walk");
+                }
                 if ( Math.abs(tx) >= Math.abs(ty) ){
                     if(tx > 0) {
                         Game.Char.Character.SetDirection(character, Game.DIRECTIONS.EAST);
@@ -72,9 +77,7 @@ Game.Char.Character = {
     },
 
     SetDirection: function SetDirection(character, direction){
-        if(character.hasOwnProperty("gear")) {
-            Game.Char.GearSet.SetDirection(character.gear, direction);
-        }
+        character.direction = direction;
     },
 
     SetMovementSpeed: function SetDirection(character, speed){
@@ -83,17 +86,14 @@ Game.Char.Character = {
             for(var index in character.gear.order){
                 var gear = character.gear[character.gear.order[index]];
                 if(gear !== ""){
-                    Engine.Render.Animation.SetSpeed(gear.animations["walk"], speed / 35);
+
                 }
             }
         }
     },
 
-    SetAction: function SetAction(character, action){
+    SetAction: function SetAction(character, action, speed){
         character.action = action;
-        if(character.hasOwnProperty("gear")) {
-            Game.Char.GearSet.SetAction(character.gear, action);
-        }
     },
 
     Move: function Move(character, direction){
@@ -128,6 +128,17 @@ Game.Char.Character = {
                 break;
         }
         Game.updateMap(Engine.Render.Renderer.GetScene(Engine.renderer), character.Destination);
+    },
+
+    Attack: function Attack(character){
+        if(character.action != "stand" || ! character.attackEnabled){
+            return;
+        }
+
+        Game.Char.Character.SetAction(character, "spellcast", 0.7);
+
+        setTimeout(function(){Game.Char.Character.SetAction(character, "stand")}, 1000);
+
     },
 
     Teleport: function Teleport(character, position){

@@ -73,6 +73,10 @@ var Game = {
             case 39:
                 Game.Char.Character.Move(Game.Character, Game.DIRECTIONS.EAST);
                 break;
+            case 32:
+                Game.Char.Character.Attack(Game.Character);
+            default:
+                console.log(event.keyCode);
         }
     },
 
@@ -146,11 +150,12 @@ var Game = {
 
         Game.Character = Game.Char.Character.createNewCharacter();
         Game.Char.Character.SetAction(Game.Character, "stand");
+        Game.Char.Character.SetMovementSpeed(Game.Character, 140);
         var x = Engine.Utilities.RNG.GenerateInclusiveInt(-65665, 65665);
         var y = Engine.Utilities.RNG.GenerateInclusiveInt(-65665, 65665);
         x = x - (x % 64);
         y = y - (y % 64);
-        Game.Char.Character.Teleport(Game.Character, {X: 0, Y: 0, Z: 0});
+        Game.Char.Character.Teleport(Game.Character, {X: x, Y: y, Z: 0});
         Engine.Render.Scene.AddRenderItem(scene, Game.Character, Game.LAYERS.PLAYERS);
 
         Engine.Render.Renderer.SetScene(Engine.renderer, scene);
