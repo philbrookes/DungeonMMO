@@ -45,8 +45,9 @@ var Game = {
     Init: function Init(engine){
         Game.Engine = engine;
         setInterval(Game.Tick, 10);
-        Game.showThrobber();
-        Game.loadLogin();
+        //Game.showThrobber();
+        //Game.loadLogin();
+        Game.loadCharScreen();
         $("body").keydown(Game.KeyDown);
         $("body").keyup(Game.KeyUp);
     },
@@ -75,8 +76,7 @@ var Game = {
                 break;
             case 32:
                 Game.Char.Character.Attack(Game.Character);
-            default:
-                console.log(event.keyCode);
+                break;
         }
     },
 

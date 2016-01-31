@@ -11,7 +11,6 @@ Animation = function(){
     this.speed=1;
     this.image = new Image();
     this.imageReady = false;
-    this.onFinish = null;
 };
 
 Engine.Render.Animation = {
@@ -52,11 +51,12 @@ Engine.Render.Animation = {
                 animation.frame++;
                 var atFrameLimit = animation.endFrame !== null && animation.frame >= animation.endFrame;
                 var atLastFrame = animation.image.width <= animation.frameWidth * animation.frame;
-                if (animation.loop && ( atFrameLimit || atLastFrame )) {
+                if (( atFrameLimit || atLastFrame )) {
                     animation.frame = animation.startFrame;
+                    if (typeof animation.onFinish === 'function') {
+                        animation.onFinish();
+                    }
                 }
-            } else if ( typeof animation.onFinish === 'function' ){
-                animation.onFinish();
             }
         }
     },

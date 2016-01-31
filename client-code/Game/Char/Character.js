@@ -82,18 +82,16 @@ Game.Char.Character = {
 
     SetMovementSpeed: function SetDirection(character, speed){
         character.MovementSpeed = speed;
-        if(character.hasOwnProperty("gear")) {
-            for(var index in character.gear.order){
-                var gear = character.gear[character.gear.order[index]];
-                if(gear !== ""){
-
-                }
-            }
-        }
     },
 
     SetAction: function SetAction(character, action, speed){
         character.action = action;
+        for (var itemIndex in character.gear.order){
+            var item = character.gear[itemIndex];
+            if( typeof item !== 'undefined' ) {
+                item.animations[action].frame = item.animations[action].startFrame;
+            }
+        }
     },
 
     Move: function Move(character, direction){
@@ -135,7 +133,7 @@ Game.Char.Character = {
             return;
         }
 
-        Game.Char.Character.SetAction(character, "spellcast", 0.7);
+        Game.Char.Character.SetAction(character, "spellcast", 1);
 
         setTimeout(function(){Game.Char.Character.SetAction(character, "stand")}, 1000);
 

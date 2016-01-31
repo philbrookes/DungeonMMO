@@ -22,7 +22,7 @@ Game.Equipment.Equippable = {
                 eq.stats = {};
                 break;
             case "noob_pants":
-                eq.image  = "plate_armor_pants";
+                eq.image  = "pants_greenish";
                 eq.slot   = "legs";
                 eq.weight = 1;
                 eq.name   = "Noob Pants";
@@ -31,7 +31,7 @@ Game.Equipment.Equippable = {
                 }
                 break;
             case "noob_shoes":
-                eq.image  = "plate_armor_shoes";
+                eq.image  = "shoes_brown";
                 eq.slot   = "feet";
                 eq.weight = 1;
                 eq.name   = "Noob Shoes";
@@ -40,7 +40,7 @@ Game.Equipment.Equippable = {
                 }
                 break;
             case "noob_vest":
-                eq.image  = "plate_armor_torso";
+                eq.image  = "leather_armor_shirt_white";
                 eq.slot   = "torso";
                 eq.weight = "1";
                 eq.name   = "Noob Vest";
