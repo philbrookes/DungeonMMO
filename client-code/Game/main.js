@@ -60,22 +60,22 @@ var Game = {
         switch (event.keyCode){
             case 87:
             case 38:
-                Game.Char.Character.Move(Game.Character, Game.DIRECTIONS.NORTH);
+                Game.character.move(Game.DIRECTIONS.NORTH);
                 break;
             case 83:
             case 40:
-                Game.Char.Character.Move(Game.Character, Game.DIRECTIONS.SOUTH);
+                Game.character.move(Game.DIRECTIONS.SOUTH);
                 break;
             case 65:
             case 37:
-                Game.Char.Character.Move(Game.Character, Game.DIRECTIONS.WEST);
+                Game.character.move(Game.DIRECTIONS.WEST);
                 break;
             case 68:
             case 39:
-                Game.Char.Character.Move(Game.Character, Game.DIRECTIONS.EAST);
+                Game.character.move(Game.DIRECTIONS.EAST);
                 break;
             case 32:
-                Game.Char.Character.Attack(Game.Character);
+                Game.character.attack();
                 break;
         }
     },
@@ -86,7 +86,7 @@ var Game = {
 
     DoRender: function DoRender(){
         if( Game.rendering === true ) {
-            Engine.Render.Renderer.Render(Engine.renderer);
+            Engine.renderer.render();
             requestAnimationFrame(Game.DoRender);
         }
     },
@@ -144,30 +144,47 @@ var Game = {
                 $("#character-create-form").on('submit', Game.characterCreateSubmit);
             });
         }*/
-        var scene = Engine.Render.Scene.CreateScene();
-        Engine.Render.Renderer.SetScene(Engine.renderer, scene);
+        var scene = new Engine.Render.scene();
+        Engine.renderer.setScene(scene);
 
-        var camera = Engine.Render.Camera.CreateCamera();
-        Engine.Render.Scene.SetCamera(scene, camera);
+        var camera = new Engine.Render.Camera(new Engine.Utilities.Position());
+        Engine.renderer.getScene().setCamera(camera);
 
-        Game.Character = Game.Char.Character.createNewCharacter();
-        Game.Char.Character.SetAction(Game.Character, "stand");
-        Game.Char.Character.SetMovementSpeed(Game.Character, 140);
+        Game.character = Game.createNewCharacter();
+        Game.character.setAction("stand");
+        Game.character.setMovementSpeed(128);
 
-        Game.Char.Character.Teleport(Game.Character, Game.generateStartingPosition());
-        Engine.Render.Scene.AddRenderItem(scene, Game.Character, Game.LAYERS.PLAYERS);
+        Game.character.teleport(Game.generateStartingPosition());
+        Engine.renderer.getScene().addRenderItem(Game.character, Game.LAYERS.PLAYERS);
 
-        Game.updateMap(scene, Game.Character.Pos);
+        Game.updateMap(scene, Game.character.pos);
 
         Game.rendering = true;
         Game.DoRender();
     },
 
+    createCharacter: function CreateCharacter() {
+        var char = new Game.Character();
+        char.gear = Game.Char.GearSet.CreateGearSet();
+        return char;
+    },
+
+    createNewCharacter: function CreateNewCharacter() {
+        char = Game.createCharacter();
+        char.gear.addToGearSet(Game.Equipment.Equipment.CreateEquipment("male_body"));
+        char.gear.addToGearSet(Game.Equipment.Equipment.CreateEquipment("noob_shoes"));
+        char.gear.addToGearSet(Game.Equipment.Equipment.CreateEquipment("noob_pants"));
+        char.gear.addToGearSet(Game.Equipment.Equipment.CreateEquipment("noob_vest"));
+        char.setMovementSpeed(140);
+        return char;
+    },
+
+
     generateStartingPosition: function generateStartingPosition(){
         var x = Engine.Utilities.RNG.GenerateInclusiveInt(-65665, 65665);
         var y = Engine.Utilities.RNG.GenerateInclusiveInt(-65665, 65665);
 
-        Game.updateMap(Engine.Render.Renderer.GetScene(Engine.renderer), {X: x*64, Y:y*64, z: 0});
+        Game.updateMap(Engine.renderer.getScene(), {x: x*64, y:y*64, z: 0});
 
         if(typeof Game.Map.Data[x][y] === 'undefined'){
             y = Object.keys(Game.Map.Data[x])[0];
@@ -176,18 +193,18 @@ var Game = {
         x = x * 64;
         y = y * 64;
 
-        return Engine.Utilities.Position.CreatePosition(x, y);
+        return new Engine.Utilities.Position(x, y);
     },
 
     updateMap: function updateMap(scene, position){
         Game.Map.Data = Game.Map.Generator.GenerateMapRegion(position);
 
-        Engine.Render.Scene.ClearLayer(scene, Game.LAYERS.BACKGROUND);
+        Engine.renderer.getScene().clearLayer(Game.LAYERS.BACKGROUND);
 
         for(var x in Game.Map.Data){
             for(var y in Game.Map.Data[x]){
                 var item = Game.Map.Data[x][y];
-                Engine.Render.Scene.AddRenderItem(scene, item, Game.LAYERS.BACKGROUND);
+                Engine.renderer.getScene().addRenderItem(item, Game.LAYERS.BACKGROUND);
             }
         }
     },

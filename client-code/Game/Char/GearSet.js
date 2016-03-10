@@ -1,4 +1,4 @@
-GearSet = function(){
+Game.Char.GearSet = function(){
     this.body = "";
     this.belt = "";
     this.feet = "";
@@ -11,53 +11,53 @@ GearSet = function(){
     this.order = ["behind", "body", "legs", "torso", "head", "feet", "hands", "belt", "weapon"];
 };
 
-Game.Char.GearSet = {
-    CreateGearSet: function CreateGearSet() {
-        return new GearSet();
-    },
-    AddToGearSet: function AddToGearSet(gearset, item) {
+Game.Char.GearSet.CreateGearSet = function CreateGearSet() {
+    return new Game.Char.GearSet();
+};
+Game.Char.GearSet.prototype = {
+    addToGearSet: function addToGearSet(item) {
         //bad slot
-        if (typeof gearset[item.slot] === "undefined") {
+        if (typeof this[item.slot] === "undefined") {
             return false;
         }
         //already filled that slot
-        if (gearset[item.slot] !== "") {
+        if (this[item.slot] !== "") {
             return false;
         }
 
-        gearset[item.slot] = item;
+        this[item.slot] = item;
 
         return true;
     },
-    Render: function Render(gearset, timeSinceLastRender, context) {
-        if ( ! Game.Char.GearSet.AnimReady(gearset)){
+    render: function render(timeSinceLastRender, context) {
+        if ( ! this.animReady()){
             return;
         }
         for (index in gearset.order) {
-            var item = gearset.order[index];
-            if (gearset[item] !== "") {
+            var item = this.order[index];
+            if (this[item] !== "") {
 
-                Engine.Render.Animation.SetSpeed(gearset[item].animations["walk"], Game.Character.MovementSpeed / 75);
+                this[item].animations["walk"].setSpeed(Game.character.movementSpeed / 75);
 
-                Game.Equipment.Equippable.SetAnimation(gearset[item], Game.Character.action);
+                this[item].setAnimation(Game.character.action);
 
-                Engine.Render.Animation.SetRow(gearset[item].animations[gearset[item].animation], Game.Character.direction);
+                this[item].animations[gearset[item].animation].setRow(Game.character.direction);
 
-                Engine.Render.Animation.Render(gearset[item].animations[gearset[item].animation], timeSinceLastRender, context);
+                this[item].animations[gearset[item].animation].render(timeSinceLastRender, context);
             }
         }
     },
-    AnimReady: function AnimReady(gearset) {
-        if(this.AnimReady){
+    animReady: function animReady() {
+        if(this.animationReady){
             return true;
         }
         for (index in this.order) {
             var item = this.order[index];
-            if(! this[item].anim.imageReady){
+            if(! this[item] || ! this[item].animation.imageReady){
                 return false;
             }
         }
-        this.AnimReady = true;
+        this.animationReady = true;
         return true;
     }
 }

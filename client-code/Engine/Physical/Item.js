@@ -1,24 +1,21 @@
-Item = function Item(){
-    this.Pos = new Position(0, 0);
+Engine.Physical.Item = function Item(){
+    this.pos = new Position(0, 0);
     this.Color = "#bcbcbc"
     this.width = 10;
     this.height = 10;
     this.RenderFunction = Engine.Physical.Item.Render;
 }
 
-Engine.Physical.Item = {
-    CreateItem: function CreateItem(){
-        return new Item;
-    },
-    GetColor: function GetColor(item){
+Engine.Physical.Item.prototype = {
+    getColor: function GetColor(){
         return item.Color;
     },
-    Render: function Render(item, timeSinceLastRender, context){
-        context.fillStyle = Engine.Physical.Item.GetColor(item);
-        context.fillRect(-(item.width/2), -(item.height/2), item.width, item.height);
+    render: function Render(timeSinceLastRender, context){
+        context.fillStyle = this.getColor();
+        context.fillRect(-(this.width/2), -(this.height/2), this.width, this.height);
     },
-    SetSize: function SetSize(item, width, height){
-        item.width = typeof width !== 'undefined' ? width : item.width;
-        item.height = typeof height !== 'undefined' ? height : item.height;
+    setSize: function SetSize(width, height){
+        this.width = typeof width !== 'undefined' ? width : this.width;
+        this.height = typeof height !== 'undefined' ? height : this.height;
     }
 }
