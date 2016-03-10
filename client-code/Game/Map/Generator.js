@@ -28,7 +28,7 @@ Game.Map.Generator = {
 
         var gridCoords = {};
 
-        var buffer_size = 11;
+        var buffer_size = 12;
 
         if ( Math.abs(centerTileX - thisGridCoords.X1) < buffer_size ){
             //also build region to the west
