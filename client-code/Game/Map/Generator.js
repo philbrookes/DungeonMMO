@@ -1,7 +1,7 @@
 Game.Map.Generator = {
     GenerateMapRegion: function GenerateMapRegion(center, width, height){
-        var centerTileX = (center.X - (center.X % Game.MAP.TILES.SIZE.X)) / Game.MAP.TILES.SIZE.X;
-        var centerTileY = (center.Y - (center.Y % Game.MAP.TILES.SIZE.Y)) / Game.MAP.TILES.SIZE.Y;
+        var centerTileX = (center.x - (center.x % Game.MAP.TILES.SIZE.X)) / Game.MAP.TILES.SIZE.X;
+        var centerTileY = (center.y - (center.y % Game.MAP.TILES.SIZE.Y)) / Game.MAP.TILES.SIZE.Y;
 
         $("#debug_info").text("X: " + centerTileX + ", Y:" + centerTileY);
 
@@ -158,11 +158,11 @@ Game.Map.Generator = {
                 if(typeof tiles[x] === 'undefined'){
                     tiles[x] = {};
                 }
-                for(var y = centerTileY-buffer_size;y<centerTileY+buffer_size;y++){
+                for(var y = centerTileY - buffer_size;y<centerTileY + buffer_size;y++){
                     if(gridTiles[x] && gridTiles[x][y]){
                         tiles[x][y] = Game.Map.Generator.createTile({
-                            X: x * Game.MAP.TILES.SIZE.X,
-                            Y: y * Game.MAP.TILES.SIZE.Y
+                            x: x * Game.MAP.TILES.SIZE.X,
+                            y: y * Game.MAP.TILES.SIZE.Y
                         });
                     }
                 }
@@ -185,17 +185,6 @@ Game.Map.Generator = {
         }
         var rng = new Math.seedrandom(seed);
 
-        var bornStr = "" + grid.X1 + grid.X2;
-        var bornList = [];
-        for (var i = 0, len = bornStr.length; i < len; i += 1) {
-            bornList.push(+bornStr.charAt(i));
-        }
-
-        var surviveStr = "" + grid.Y1 + grid.Y2;
-        var surviveList = [];
-        for (var i = 0, len = surviveStr.length; i < len; i += 1) {
-            surviveList.push(+surviveStr.charAt(i));
-        }
 
         var bornList = [6,7,8];
         var surviveList = [3,4,5,6,7,8];
@@ -285,9 +274,9 @@ Game.Map.Generator = {
 
     createTile: function createTile(position){
         var tile = Game.Map.Tile.CreateTile(
-            "/images/tiles/dc-dngn/floor/cobble_blood" + (Math.abs((position.X * position.Y) % 11) + 1) + ".png"
+            "/images/tiles/dc-dngn/floor/cobble_blood" + (Math.abs((position.x * position.y) % 11) + 1) + ".png"
         );
-        Engine.Utilities.Position.SetPos(tile.Pos, position);
+        tile.pos.setPos(position);
         return tile;
     }
 

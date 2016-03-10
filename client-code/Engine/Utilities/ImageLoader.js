@@ -1,4 +1,4 @@
-var PreloadedImage = function(src){
+Engine.Utilities.PreloadedImage = function(src){
     this.image = new Image();
     this.imageReady = false;
     var me = this;
@@ -15,7 +15,7 @@ Engine.Utilities.ImageLoader = {
             return Engine.Utilities.ImageLoader.images[src];
         }
 
-        Engine.Utilities.ImageLoader.images[src] = new PreloadedImage(src);
+        Engine.Utilities.ImageLoader.images[src] = new Engine.Utilities.PreloadedImage(src);
 
         return Engine.Utilities.ImageLoader.images[src];
     }

@@ -1,148 +1,148 @@
-Character = function Character(){
+Game.Character = function Character(){
     this.name = "";
-    this.Gear = {};
-    this.Health = 0;
-    this.MaxHealth = 100;
+    this.gear = {};
+    this.health = 0;
+    this.maxHealth = 100;
     this.action = "stand";
-    this.Pos = Engine.Utilities.Position.CreatePosition();
-    this.Destination = Engine.Utilities.Position.CreatePosition();
-    this.MovementSpeed = 35;
-    this.RenderFunction = Game.Char.Character.Render;
+    this.pos = new Engine.Utilities.Position();
+    this.destination = new Engine.Utilities.Position();
+    this.movementSpeed = 35;
     this.shadow = Engine.Utilities.ImageLoader.Load("/images/characters/shadows/shadow.png");
+    this.image = Engine.Utilities.ImageLoader.Load("/images/characters/walkcycle/BODY_male.png");
     this.attackSpeed = 1;
     this.attackEnabled = true;
     this.direction = Game.DIRECTIONS.SOUTH;
 };
 
-Game.Char.Character = {
-    createCharacter: function CreateCharacter() {
-        var char = new Character();
-        char.gear = new Game.Char.GearSet.CreateGearSet();
-        return char;
-    },
-
-    createNewCharacter: function CreateNewCharacter() {
-        char = Game.Char.Character.createCharacter();
-        Game.Char.GearSet.AddToGearSet(char.gear, Game.Equipment.Equippable.CreateEquipment("male_body"));
-        Game.Char.GearSet.AddToGearSet(char.gear, Game.Equipment.Equippable.CreateEquipment("noob_shoes"));
-        Game.Char.GearSet.AddToGearSet(char.gear, Game.Equipment.Equippable.CreateEquipment("noob_pants"));
-        Game.Char.GearSet.AddToGearSet(char.gear, Game.Equipment.Equippable.CreateEquipment("noob_vest"));
-        Game.Char.Character.SetMovementSpeed(char, 140);
-        return char;
-    },
-
-    Render: function Render(character, timeSinceLastRender, context){
-        if(character.shadow.imageReady){
-            context.drawImage(character.shadow.image, 0, 0, 64, 64, -32, -28, 64, 64);
-        }
-        Game.Char.GearSet.Render(character.gear, timeSinceLastRender, context);
-        var distance = Engine.Utilities.Position.Distance(character.Pos, character.Destination);
-        if(distance > 0){
-            var movement = character.MovementSpeed * timeSinceLastRender;
-            if ( movement > distance ){
-                Engine.Utilities.Position.SetPos(character.Pos, character.Destination);
-                Game.Char.Character.SetAction(character, "stand");
+Game.Character.prototype = {
+    render: function Render(timeSinceLastRender, context) {
+        var distance = this.pos.distance(this.destination);
+        if (distance > 0) {
+            var movement = this.movementSpeed * timeSinceLastRender;
+            if (movement > distance) {
+                this.pos.setPos(this.destination);
+                this.setAction("stand");
             } else {
-                var tx = character.Destination.X - character.Pos.X;
-                var ty = character.Destination.Y - character.Pos.Y;
-                var velX = (tx/distance) * (character.MovementSpeed * timeSinceLastRender);
-                var velY = (ty/distance) * (character.MovementSpeed * timeSinceLastRender);
+                var tx = this.destination.x - this.pos.x;
+                var ty = this.destination.y - this.pos.y;
+                var velX = (tx / distance) * (this.movementSpeed * timeSinceLastRender);
+                var velY = (ty / distance) * (this.movementSpeed * timeSinceLastRender);
 
-                if(character.action !== "walk") {
-                    Game.Char.Character.SetAction(character, "walk");
+                if (this.action !== "walk") {
+                    this.setAction("walk");
                 }
-                if ( Math.abs(tx) >= Math.abs(ty) ){
-                    if(tx > 0) {
-                        Game.Char.Character.SetDirection(character, Game.DIRECTIONS.EAST);
+                if (Math.abs(tx) >= Math.abs(ty)) {
+                    if (tx > 0) {
+                        this.setDirection(Game.DIRECTIONS.EAST);
                     } else {
-                        Game.Char.Character.SetDirection(character, Game.DIRECTIONS.WEST);
+                        this.setDirection(Game.DIRECTIONS.WEST);
                     }
                 } else {
-                    if(ty > 0) {
-                        Game.Char.Character.SetDirection(character, Game.DIRECTIONS.SOUTH);
+                    if (ty > 0) {
+                        this.setDirection(Game.DIRECTIONS.SOUTH);
                     } else {
-                        Game.Char.Character.SetDirection(character, Game.DIRECTIONS.NORTH);
+                        this.setDirection(Game.DIRECTIONS.NORTH);
                     }
                 }
 
-                Engine.Utilities.Position.SetPos(character.Pos, {
-                    X: character.Pos.X + velX,
-                    Y: character.Pos.Y + velY
+                this.pos.setPos({
+                    x: this.pos.x + velX,
+                    y: this.pos.y + velY
                 });
-                var cam = Engine.Render.Scene.GetCamera(Engine.Render.Renderer.GetScene(Engine.renderer));
-                Engine.Utilities.Position.SetPos(cam.Pos, character.Pos);
+                var cam = Engine.renderer.getScene().getCamera();
+                cam.pos.setPos(this.pos);
             }
         }
 
+        if (this.shadow.imageReady) {
+            context.drawImage(this.shadow.image, 0, 0, 64, 64, -32, -28, 64, 64);
+        }
+
+        if (this.image.imageReady)
+        {
+            context.drawImage(
+                this.image.image,
+                0,
+                128,
+                64,
+                64,
+                -32,
+                -32,
+                64,
+                64
+            );
+        }
+        //this.gear.render(timeSinceLastRender, context);
+
     },
 
-    SetDirection: function SetDirection(character, direction){
-        character.direction = direction;
+    setDirection: function SetDirection(direction){
+        this.direction = direction;
     },
 
-    SetMovementSpeed: function SetDirection(character, speed){
-        character.MovementSpeed = speed;
-        if(character.hasOwnProperty("gear")) {
-            for(var index in character.gear.order){
-                var gear = character.gear[character.gear.order[index]];
-                if(gear !== ""){
+    setMovementSpeed: function SetDirection(speed){
+        this.movementSpeed = speed;
+    },
 
-                }
+    setAction: function SetAction(action, speed){
+        this.action = action;
+        for (var itemIndex in this.gear.order){
+            var item = this.gear[itemIndex];
+            if( typeof item !== 'undefined' ) {
+                item.animations[action].frame = item.animations[action].startFrame;
             }
         }
     },
 
-    SetAction: function SetAction(character, action, speed){
-        character.action = action;
-    },
-
-    Move: function Move(character, direction){
-        if(character.action != "stand"){
+    move: function Move(direction){
+        if(this.action != "stand"){
             return;
         }
 
-        Game.Char.Character.SetDirection(character, direction);
+        this.setDirection(direction);
 
-        var currentTileX = character.Pos.X / Game.MAP.TILES.SIZE.X;
-        var currentTileY = character.Pos.Y / Game.MAP.TILES.SIZE.Y;
+        var currentTileX = this.pos.x / Game.MAP.TILES.SIZE.X;
+        var currentTileY = this.pos.y / Game.MAP.TILES.SIZE.Y;
         switch (direction){
             case Game.DIRECTIONS.NORTH:
                 if(typeof Game.Map.Data[currentTileX][currentTileY - 1] !== 'undefined') {
-                    Engine.Utilities.Position.SetPos(character.Destination, {Y: character.Pos.Y - Game.MAP.TILES.SIZE.Y});
+                    this.destination.setPos({y: this.pos.y - Game.MAP.TILES.SIZE.Y});
                 }
                 break;
             case Game.DIRECTIONS.SOUTH:
                 if(typeof Game.Map.Data[currentTileX][currentTileY + 1] !== 'undefined') {
-                    Engine.Utilities.Position.SetPos(character.Destination, {Y: character.Pos.Y + Game.MAP.TILES.SIZE.Y});
+                    this.destination.setPos({y: this.pos.y + Game.MAP.TILES.SIZE.Y});
                 }
                 break;
             case Game.DIRECTIONS.WEST:
                 if(typeof Game.Map.Data[currentTileX - 1][currentTileY] !== 'undefined') {
-                    Engine.Utilities.Position.SetPos(character.Destination, {X: character.Pos.X - Game.MAP.TILES.SIZE.X});
+                    this.destination.setPos({x: this.pos.x - Game.MAP.TILES.SIZE.X});
                 }
                 break;
             case Game.DIRECTIONS.EAST:
                 if(typeof Game.Map.Data[currentTileX + 1][currentTileY] !== 'undefined') {
-                    Engine.Utilities.Position.SetPos(character.Destination, {X: character.Pos.X + Game.MAP.TILES.SIZE.X});
+                    this.destination.setPos({x: this.pos.x + Game.MAP.TILES.SIZE.X});
                 }
                 break;
         }
-        Game.updateMap(Engine.Render.Renderer.GetScene(Engine.renderer), character.Destination);
+        Game.updateMap(Engine.renderer.getScene(), this.destination);
     },
 
-    Attack: function Attack(character){
-        if(character.action != "stand" || ! character.attackEnabled){
+    attack: function attack(){
+        if(this.action != "stand" || ! this.attackEnabled){
             return;
         }
 
-        Game.Char.Character.SetAction(character, "spellcast", 0.7);
+        this.setAction("spellcast");
 
-        setTimeout(function(){Game.Char.Character.SetAction(character, "stand")}, 1000);
+        var me = this;
+        setTimeout(function(){me.setAction("stand")}, 1000);
 
     },
 
-    Teleport: function Teleport(character, position){
-        Engine.Utilities.Position.SetPos(character.Pos, position);
-        Engine.Utilities.Position.SetPos(character.Destination, position);
+    teleport: function teleport(position){
+        this.pos.setPos(position);
+        this.destination.setPos(position);
+        Engine.renderer.getScene().getCamera().setPosition(this.pos);
     }
 };
