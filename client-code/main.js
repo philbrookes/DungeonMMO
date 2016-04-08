@@ -4,5 +4,10 @@ $(document).ready(function(){
     Engine.renderer = new Engine.Render.Renderer();
     Engine.renderer.setContext(context);
     Game.Init(Engine);
-});
 
+    websocket = new WebSocket("ws://localhost:12345/chat/main");
+    websocket.onopen = function(evt) { console.log(evt); };
+    websocket.onclose = function(evt) { console.log(evt); };
+    websocket.onmessage = function(evt) { console.log(evt); };
+    websocket.onerror = function(evt) { console.log(evt); };
+});

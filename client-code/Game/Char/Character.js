@@ -16,43 +16,13 @@ Game.Character = function Character(){
 
 Game.Character.prototype = {
     render: function Render(timeSinceLastRender, context) {
-        var distance = this.pos.distance(this.destination);
-        if (distance > 0) {
-            var movement = this.movementSpeed * timeSinceLastRender;
-            if (movement > distance) {
-                this.pos.setPos(this.destination);
-                this.setAction("stand");
-            } else {
-                var tx = this.destination.x - this.pos.x;
-                var ty = this.destination.y - this.pos.y;
-                var velX = (tx / distance) * (this.movementSpeed * timeSinceLastRender);
-                var velY = (ty / distance) * (this.movementSpeed * timeSinceLastRender);
 
-                if (this.action !== "walk") {
-                    this.setAction("walk");
-                }
-                if (Math.abs(tx) >= Math.abs(ty)) {
-                    if (tx > 0) {
-                        this.setDirection(Game.DIRECTIONS.EAST);
-                    } else {
-                        this.setDirection(Game.DIRECTIONS.WEST);
-                    }
-                } else {
-                    if (ty > 0) {
-                        this.setDirection(Game.DIRECTIONS.SOUTH);
-                    } else {
-                        this.setDirection(Game.DIRECTIONS.NORTH);
-                    }
-                }
-
-                this.pos.setPos({
-                    x: this.pos.x + velX,
-                    y: this.pos.y + velY
-                });
-                var cam = Engine.renderer.getScene().getCamera();
-                cam.pos.setPos(this.pos);
-            }
+        if (this.action !== "stand" && this.pos.moveTowards(this.destination, this.movementSpeed, timeSinceLastRender)) {
+            this.setAction("stand");
         }
+
+        var cam = Engine.renderer.getScene().getCamera();
+        cam.pos.setPos(this.pos);
 
         if (this.shadow.imageReady) {
             context.drawImage(this.shadow.image, 0, 0, 64, 64, -32, -28, 64, 64);
@@ -60,19 +30,8 @@ Game.Character.prototype = {
 
         if (this.image.imageReady)
         {
-            context.drawImage(
-                this.image.image,
-                0,
-                128,
-                64,
-                64,
-                -32,
-                -32,
-                64,
-                64
-            );
+            context.drawImage(this.image.image, 0, 128, 64, 64, -32, -32, 64, 64);
         }
-        //this.gear.render(timeSinceLastRender, context);
 
     },
 
@@ -98,34 +57,11 @@ Game.Character.prototype = {
         if(this.action != "stand"){
             return;
         }
-
-        this.setDirection(direction);
-
-        var currentTileX = this.pos.x / Game.MAP.TILES.SIZE.X;
-        var currentTileY = this.pos.y / Game.MAP.TILES.SIZE.Y;
-        switch (direction){
-            case Game.DIRECTIONS.NORTH:
-                if(typeof Game.Map.Data[currentTileX][currentTileY - 1] !== 'undefined') {
-                    this.destination.setPos({y: this.pos.y - Game.MAP.TILES.SIZE.Y});
-                }
-                break;
-            case Game.DIRECTIONS.SOUTH:
-                if(typeof Game.Map.Data[currentTileX][currentTileY + 1] !== 'undefined') {
-                    this.destination.setPos({y: this.pos.y + Game.MAP.TILES.SIZE.Y});
-                }
-                break;
-            case Game.DIRECTIONS.WEST:
-                if(typeof Game.Map.Data[currentTileX - 1][currentTileY] !== 'undefined') {
-                    this.destination.setPos({x: this.pos.x - Game.MAP.TILES.SIZE.X});
-                }
-                break;
-            case Game.DIRECTIONS.EAST:
-                if(typeof Game.Map.Data[currentTileX + 1][currentTileY] !== 'undefined') {
-                    this.destination.setPos({x: this.pos.x + Game.MAP.TILES.SIZE.X});
-                }
-                break;
+        if(this.pos.hasExit(direction)){
+            this.setAction("walking");
+            this.destination = this.pos.tileOffset(direction);
+            Game.updateMap(Engine.renderer.getScene(), this.destination);
         }
-        Game.updateMap(Engine.renderer.getScene(), this.destination);
     },
 
     attack: function attack(){

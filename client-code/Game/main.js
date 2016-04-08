@@ -1,6 +1,7 @@
 var Game = {
     Char: {},
     Equipment: {},
+    Units: {},
     Map: {
         Data: {}
     },
@@ -9,6 +10,7 @@ var Game = {
     Player: {},
     Character: {},
     DIRECTIONS: {
+        NONE: -1,
         NORTH: 0,
         WEST: 1,
         SOUTH: 2,
@@ -130,34 +132,24 @@ var Game = {
     },
 
     loadCharScreen: function loadCharScreen(){
-        /*Game.showThrobber();
-        if( Game.Player.characters.length > 0) {
-            Game.loadTemplate("character-choose", function (data) {
-                $('body').append(data);
-                Game.hideThrobber();
-                $("#login-form").on('submit', Game.loginSubmit);
-            });
-        } else {
-            Game.loadTemplate("character-create", function(data) {
-                $('body').append(data);
-                Game.hideThrobber();
-                $("#character-create-form").on('submit', Game.characterCreateSubmit);
-            });
-        }*/
         var scene = new Engine.Render.scene();
         Engine.renderer.setScene(scene);
 
         var camera = new Engine.Render.Camera(new Engine.Utilities.Position());
         Engine.renderer.getScene().setCamera(camera);
 
+        startPos = Game.generateStartingPosition();
+
         Game.character = Game.createNewCharacter();
         Game.character.setAction("stand");
         Game.character.setMovementSpeed(128);
+        Game.character.teleport(startPos);
 
-        Game.character.teleport(Game.generateStartingPosition());
+        Game.mob = Game.Units.Mob.newMob({pos: startPos, destination: startPos, moveTime: 3});
+
         Engine.renderer.getScene().addRenderItem(Game.character, Game.LAYERS.PLAYERS);
-
-        Game.updateMap(scene, Game.character.pos);
+        Engine.renderer.getScene().addRenderItem(Game.mob, Game.LAYERS.MONSTERS);
+        Game.updateMap(Engine.renderer.getScene(), Game.character.pos);
 
         Game.rendering = true;
         Game.DoRender();
