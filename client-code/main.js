@@ -5,8 +5,13 @@ $(document).ready(function(){
     Engine.renderer.setContext(context);
     Game.Init(Engine);
 
-    websocket = new WebSocket("ws://localhost:12345/chat/main");
-    websocket.onopen = function(evt) { console.log(evt); };
+    websocket = new WebSocket("ws://localhost:8080/game");
+
+
+    websocket.onopen = function(evt) {
+        //websocket.send({"command":"move","data":{}})
+        console.log(evt);
+    };
     websocket.onclose = function(evt) { console.log(evt); };
     websocket.onmessage = function(evt) { console.log(evt); };
     websocket.onerror = function(evt) { console.log(evt); };
