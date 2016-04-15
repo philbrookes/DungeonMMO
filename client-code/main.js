@@ -5,7 +5,7 @@ $(document).ready(function(){
     Engine.renderer.setContext(context);
     Game.Init(Engine);
 
-    websocket = new WebSocket("ws://localhost:8080/game");
+    websocket = new WebSocket("ws://localhost:3000/ws");
 
 
     websocket.onopen = function(evt) {
@@ -16,3 +16,4 @@ $(document).ready(function(){
     websocket.onmessage = function(evt) { console.log(evt); };
     websocket.onerror = function(evt) { console.log(evt); };
 });
+
