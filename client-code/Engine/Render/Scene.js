@@ -24,10 +24,12 @@ Engine.Render.scene.prototype = {
         }
     },
     removeRenderItem: function removeRenderItem(item){
+        console.log("looking for render item to delete");
         for(var layerIndex in this.layers) {
             var layer = this.layers[layerIndex];
             var index = layer.RenderItems.indexOf(item);
             if (index !== -1) {
+                console.log("removing render item");
                 layer.RenderItems.splice(index, 1);
             }
         }

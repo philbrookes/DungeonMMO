@@ -23,12 +23,8 @@ var Game = {
                 Y: 64
             }
         },
-        GRID: {
-            SIZE: {
-                X: 30,
-                Y: 30
-            }
-        }
+        BUFFER: 12,
+        SCALE: 64
     },
     LAYERS: {
         DEEP_BACKGROUND: 0,
@@ -47,11 +43,99 @@ var Game = {
     Init: function Init(engine){
         Game.Engine = engine;
         setInterval(Game.Tick, 10);
-        //Game.showThrobber();
-        //Game.loadLogin();
-        Game.loadCharScreen();
+        Game.showThrobber();
+        Game.socket.onopen = function(evt){
+            Game.initGame();
+        }
+
+        Game.socket.onclose = Game.disconnected;
+        Game.socket.onmessage = Game.data;
+        Game.socket.onerror = Game.error;
+
+
         $("body").keydown(Game.KeyDown);
         $("body").keyup(Game.KeyUp);
+    },
+
+    disconnected: function(evt){
+
+    },
+
+    error: function(evt){
+
+    },
+
+    data: function(evt){
+        var command = JSON.parse(evt.data);
+        console.log(command);
+        switch (command.task){
+            case "init":
+                var scene = new Engine.Render.scene();
+                Engine.renderer.setScene(scene);
+
+                var camera = new Engine.Render.Camera(new Engine.Utilities.Position());
+                Engine.renderer.getScene().setCamera(camera);
+
+                Game.character = Game.createNewCharacter();
+                Game.character.isPlayer = true;
+                Game.otherCharacters = {};
+                Game.character.setAction("stand");
+                Game.character.setMovementSpeed(command.data.player.moveSpeed * Game.MAP.SCALE);
+                Game.character.teleport(command.data.player.pos, Game.MAP.SCALE);
+
+                Engine.renderer.getScene().addRenderItem(Game.character, Game.LAYERS.PLAYERS);
+                Game.updateMap(command.data.map, Engine.renderer.getScene(), Game.character.pos);
+
+                Game.hideThrobber();
+                Game.rendering = true;
+                Game.DoRender();
+                break;
+            case "move":
+                Game.character.destination.setPos(command.player.destination, Game.MAP.SCALE);
+                Game.character.setMovementSpeed(command.player.moveSpeed * Game.MAP.SCALE);
+                Game.character.action = command.player.action;
+                break;
+            case "syncPlayer":
+                Game.character.teleport(command.player.pos, Game.MAP.SCALE);
+                Game.character.setMovementSpeed(command.player.moveSpeed * Game.MAP.SCALE);
+                Game.character.action = command.player.action;
+                Game.resyncMap();
+                break;
+            case "updateOther":
+                var otherPlayer = command.data.player;
+                console.log(otherPlayer.action);
+                if(otherPlayer.action !== "disconnect" && Game.character.pos.distance(otherPlayer.pos, Game.MAP.SCALE) < Game.MAP.BUFFER * Game.MAP.SCALE){
+                    if(Game.otherCharacters[otherPlayer.id] == null) {
+                        Game.otherCharacters[otherPlayer.id] = Game.createCharacter();
+                        Engine.renderer.getScene().addRenderItem(Game.otherCharacters[otherPlayer.id], Game.LAYERS.PLAYERS);
+                    }
+                    Game.otherCharacters[otherPlayer.id].pos.setPos(otherPlayer.pos, Game.MAP.SCALE);
+                    Game.otherCharacters[otherPlayer.id].destination.setPos(otherPlayer.destination, Game.MAP.SCALE);
+                    Game.otherCharacters[otherPlayer.id].action = otherPlayer.action;
+                    Game.otherCharacters[otherPlayer.id].setMovementSpeed(otherPlayer.moveSpeed * Game.MAP.SCALE);
+                } else {
+                    if(Game.otherCharacters[otherPlayer.id] != null) {
+                        Engine.renderer.getScene().removeRenderItem(Game.otherCharacters[otherPlayer.id]);
+                        delete Game.otherCharacters[otherPlayer.id];
+                    }
+                }
+                break;
+            case "resyncMap":
+                Game.updateMap(command.data.map, Engine.renderer.getScene(), Game.character.pos);
+                break;
+        }
+    },
+
+    initGame: function initGame(){
+        Game.socket.send(JSON.stringify({"task":"init","data":{}}));
+    },
+
+    move: function move(direction){
+        Game.socket.send(JSON.stringify({"task":"move","data": {"direction": direction}}));
+    },
+
+    resyncMap: function resyncMap(){
+        Game.socket.send(JSON.stringify({"task":"resyncMap", "data": {}}));
     },
 
     Tick: function Tick(){
@@ -62,19 +146,19 @@ var Game = {
         switch (event.keyCode){
             case 87:
             case 38:
-                Game.character.move(Game.DIRECTIONS.NORTH);
+                Game.move(Game.DIRECTIONS.NORTH);
                 break;
             case 83:
             case 40:
-                Game.character.move(Game.DIRECTIONS.SOUTH);
+                Game.move(Game.DIRECTIONS.SOUTH);
                 break;
             case 65:
             case 37:
-                Game.character.move(Game.DIRECTIONS.WEST);
+                Game.move(Game.DIRECTIONS.WEST);
                 break;
             case 68:
             case 39:
-                Game.character.move(Game.DIRECTIONS.EAST);
+                Game.move(Game.DIRECTIONS.EAST);
                 break;
             case 32:
                 Game.character.attack();
@@ -131,29 +215,6 @@ var Game = {
         Game.loadCharScreen();
     },
 
-    loadCharScreen: function loadCharScreen(){
-        var scene = new Engine.Render.scene();
-        Engine.renderer.setScene(scene);
-
-        var camera = new Engine.Render.Camera(new Engine.Utilities.Position());
-        Engine.renderer.getScene().setCamera(camera);
-
-        startPos = Game.generateStartingPosition();
-
-        Game.character = Game.createNewCharacter();
-        Game.character.setAction("stand");
-        Game.character.setMovementSpeed(128);
-        Game.character.teleport(startPos);
-
-        Game.mob = Game.Units.Mob.newMob({pos: startPos, destination: startPos, moveTime: 3});
-
-        Engine.renderer.getScene().addRenderItem(Game.character, Game.LAYERS.PLAYERS);
-        Engine.renderer.getScene().addRenderItem(Game.mob, Game.LAYERS.MONSTERS);
-        Game.updateMap(Engine.renderer.getScene(), Game.character.pos);
-
-        Game.rendering = true;
-        Game.DoRender();
-    },
 
     createCharacter: function CreateCharacter() {
         var char = new Game.Character();
@@ -173,32 +234,26 @@ var Game = {
 
 
     generateStartingPosition: function generateStartingPosition(){
-        var x = Engine.Utilities.RNG.GenerateInclusiveInt(-65665, 65665);
-        var y = Engine.Utilities.RNG.GenerateInclusiveInt(-65665, 65665);
-
-        Game.updateMap(Engine.renderer.getScene(), {x: x*64, y:y*64, z: 0});
-
-        if(typeof Game.Map.Data[x][y] === 'undefined'){
-            y = Object.keys(Game.Map.Data[x])[0];
-        }
-
-        x = x * 64;
-        y = y * 64;
-
-        return new Engine.Utilities.Position(x, y);
+        Game.updateMap(Engine.renderer.getScene(), {x: 0, y:0, z: 0});
+        return new Engine.Utilities.Position(0, 0);
     },
 
-    updateMap: function updateMap(scene, position){
-        Game.Map.Data = Game.Map.Generator.GenerateMapRegion(position);
-
+    updateMap: function updateMap(data){
         Engine.renderer.getScene().clearLayer(Game.LAYERS.BACKGROUND);
-
-        for(var x in Game.Map.Data){
-            for(var y in Game.Map.Data[x]){
-                var item = Game.Map.Data[x][y];
-                Engine.renderer.getScene().addRenderItem(item, Game.LAYERS.BACKGROUND);
+        var tiles = [];
+        for(var x in data){
+            if(typeof tiles[x] === 'undefined'){
+                tiles[x] = {};
+            }
+            for(var y in data[x]){
+                tiles[x][y] = Game.Map.Generator.createTile({
+                    x: x * Game.MAP.TILES.SIZE.X,
+                    y: y * Game.MAP.TILES.SIZE.Y
+                });
+                Engine.renderer.getScene().addRenderItem(tiles[x][y], Game.LAYERS.BACKGROUND);
             }
         }
+        Game.Map.Data = tiles;
     },
 
     characterCreateSubmit: function characterCreateSubmit(event){

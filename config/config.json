@@ -3,6 +3,21 @@
     "port": 8080
   },
   "game-server": {
-    "listener": "game"
+    "listener": "game",
+    "memcached": {
+      "host": "memcached",
+      "port": "11211"
+    },
+    "map": {
+      "grid": {
+        "size": {
+          "x": 64,
+          "y": 64
+        },
+        "buffer": 12,
+        "cache-time": 1
+      }
+    }
+
   }
 }

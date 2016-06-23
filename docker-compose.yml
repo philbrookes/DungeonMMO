@@ -1,0 +1,12 @@
+version: '2'
+services:
+  dungeon-mmo:
+    build: .
+    ports:
+      - "8080:8080"
+    depends_on:
+      - memcached
+    volumes:
+      - .:/usr/src/app
+  memcached:
+    image: memcached

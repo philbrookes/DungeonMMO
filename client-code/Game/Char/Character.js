@@ -3,7 +3,7 @@ Game.Character = function Character(){
     this.gear = {};
     this.health = 0;
     this.maxHealth = 100;
-    this.action = "stand";
+    this.action = "idle";
     this.pos = new Engine.Utilities.Position();
     this.destination = new Engine.Utilities.Position();
     this.movementSpeed = 35;
@@ -12,17 +12,20 @@ Game.Character = function Character(){
     this.attackSpeed = 1;
     this.attackEnabled = true;
     this.direction = Game.DIRECTIONS.SOUTH;
+    this.isPlayer = false;
 };
 
 Game.Character.prototype = {
     render: function Render(timeSinceLastRender, context) {
 
-        if (this.action !== "stand" && this.pos.moveTowards(this.destination, this.movementSpeed, timeSinceLastRender)) {
-            this.setAction("stand");
+        if (this.action !== "idle" && this.pos.moveTowards(this.destination, this.movementSpeed, timeSinceLastRender)) {
+            this.setAction("idle");
         }
 
-        var cam = Engine.renderer.getScene().getCamera();
-        cam.pos.setPos(this.pos);
+        if(this.isPlayer) {
+            var cam = Engine.renderer.getScene().getCamera();
+            cam.pos.setPos(this.pos);
+        }
 
         if (this.shadow.imageReady) {
             context.drawImage(this.shadow.image, 0, 0, 64, 64, -32, -28, 64, 64);
@@ -54,31 +57,33 @@ Game.Character.prototype = {
     },
 
     move: function Move(direction){
-        if(this.action != "stand"){
+        if(this.action != "idle"){
             return;
         }
         if(this.pos.hasExit(direction)){
-            this.setAction("walking");
+            this.setAction("moving");
             this.destination = this.pos.tileOffset(direction);
             Game.updateMap(Engine.renderer.getScene(), this.destination);
         }
     },
 
     attack: function attack(){
-        if(this.action != "stand" || ! this.attackEnabled){
+        if(this.action != "idle" || ! this.attackEnabled){
             return;
         }
 
         this.setAction("spellcast");
 
         var me = this;
-        setTimeout(function(){me.setAction("stand")}, 1000);
+        setTimeout(function(){me.setAction("idle")}, 1000);
 
     },
 
-    teleport: function teleport(position){
-        this.pos.setPos(position);
-        this.destination.setPos(position);
-        Engine.renderer.getScene().getCamera().setPosition(this.pos);
+    teleport: function teleport(position, scale){
+        this.pos.setPos(position, scale);
+        this.destination.setPos(position, scale);
+        if(this.isPlayer) {
+            Engine.renderer.getScene().getCamera().setPosition(this.pos);
+        }
     }
 };

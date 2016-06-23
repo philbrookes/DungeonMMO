@@ -3,16 +3,8 @@ $(document).ready(function(){
     var context = canvas.getContext("2d");
     Engine.renderer = new Engine.Render.Renderer();
     Engine.renderer.setContext(context);
+
+    console.log("ws://" + location.host + "/game");
+    Game.socket = new WebSocket("ws://" + location.host + "/game");
     Game.Init(Engine);
-
-    websocket = new WebSocket("ws://localhost:8080/game");
-
-
-    websocket.onopen = function(evt) {
-        //websocket.send({"command":"move","data":{}})
-        console.log(evt);
-    };
-    websocket.onclose = function(evt) { console.log(evt); };
-    websocket.onmessage = function(evt) { console.log(evt); };
-    websocket.onerror = function(evt) { console.log(evt); };
 });

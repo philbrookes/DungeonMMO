@@ -5,16 +5,22 @@ Engine.Utilities.Position = function(x, y, z){
 }
 
 Engine.Utilities.Position.prototype = {
-    distance: function distance(pos){
-        var tx = pos.x - this.x,
-            ty = pos.y - this.y,
-            tz = pos.z - this.z;
+    distance: function distance(pos, scale){
+        if( typeof scale === 'undefined'){
+            scale = 1;
+        }
+        var tx = (pos.x * scale) - this.x,
+            ty = (pos.y * scale) - this.y,
+            tz = ((pos.z ? pos.z : 0) * scale) - this.z;
             return Math.sqrt(tx*tx+ty*ty+tz*tz);
     },
-    setPos: function setPos(newPos){
-        this.x = typeof newPos.x !== 'undefined' ? newPos.x : this.x;
-        this.y = typeof newPos.y !== 'undefined' ? newPos.y : this.y;
-        this.z = typeof newPos.z !== 'undefined' ? newPos.z : this.z;
+    setPos: function setPos(newPos, scale){
+        if( typeof scale === 'undefined'){
+            scale = 1;
+        }
+        this.x = typeof newPos.x !== 'undefined' ? newPos.x * scale : this.x;
+        this.y = typeof newPos.y !== 'undefined' ? newPos.y * scale : this.y;
+        this.z = typeof newPos.z !== 'undefined' ? newPos.z * scale : this.z;
     },
     moveTowards: function moveTowards(destination, speed, timeElapsed){
         var distance = this.distance(destination);
