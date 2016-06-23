@@ -92,8 +92,10 @@ var Game = {
                 break;
             case "move":
                 Game.character.destination.setPos(command.player.destination, Game.MAP.SCALE);
+                console.log(Game.character.destination);
                 Game.character.setMovementSpeed(command.player.moveSpeed * Game.MAP.SCALE);
                 Game.character.action = command.player.action;
+                console.log(Game.character.action);
                 break;
             case "syncPlayer":
                 Game.character.teleport(command.player.pos, Game.MAP.SCALE);

@@ -45,6 +45,7 @@ var PlayerCommands = module.exports = function PlayerCommands(player){
             }
 
             player.destination = destination;
+            player.action = "moving";
             player.socket.send(JSON.stringify(
                 {"task": "move", "player": {"destination": player.destination, "moveSpeed": player.moveSpeed, "action": player.action}}
             ));
